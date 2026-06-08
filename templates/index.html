@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RAGdoc — Intelligent Document Assistant</title>
+  <meta name="description" content="Upload documents and get instant AI-powered answers. RAGdoc understands your PDFs and provides accurate, contextual responses." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to main content</a>
+
+  <div class="app-shell">
+
+    <!-- ═══ SIDEBAR ═══ -->
+    <aside class="sidebar" id="sidebar" aria-label="Sidebar navigation">
+      <div class="sidebar-inner">
+
+        <!-- Brand -->
+        <div class="brand">
+          <div class="brand-logo" aria-hidden="true">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <path d="M12 2L2 7l10 5 10-5-10-5z" fill="currentColor" opacity="0.9"/>
+              <path d="M2 17l10 5 10-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none" opacity="0.6"/>
+              <path d="M2 12l10 5 10-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none" opacity="0.8"/>
+            </svg>
+          </div>
+          <div class="brand-info">
+            <span class="brand-name">RAGdoc</span>
+            <span class="brand-tag">AI</span>
+          </div>
+        </div>
+
+        <!-- User profile card -->
+        <div class="user-card" id="userCard">
+          <div class="user-avatar-wrap" id="clerkUserButton"></div>
+          <div class="user-info">
+            <span class="user-name" id="userName">Loading…</span>
+            <span class="user-email" id="userEmail"></span>
+          </div>
+          <button class="user-signout-btn" id="signOutBtn" title="Sign out" aria-label="Sign out">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+              <polyline points="16 17 21 12 16 7"/>
+              <line x1="21" y1="12" x2="9" y2="12"/>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Navigation -->
+        <nav class="sidebar-nav" aria-label="Primary navigation">
+          <a class="nav-item active" href="#" data-nav="chat" aria-current="page" id="navChat">
+            <span class="nav-icon" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+              </svg>
+            </span>
+            <span>Chat</span>
+          </a>
+          <a class="nav-item" href="#" data-nav="docs" id="navDocs">
+            <span class="nav-icon" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+              </svg>
+            </span>
+            <span>Documents</span>
+          </a>
+          <a class="nav-item" href="#" data-nav="settings" id="navSettings">
+            <span class="nav-icon" aria-hidden="true">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="3"/>
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+              </svg>
+            </span>
+            <span>Settings</span>
+          </a>
+        </nav>
+
+        <!-- Documents panel (inside sidebar) -->
+        <div class="nav-panel" id="docsPanel" hidden>
+          <div class="nav-panel-title">Your Documents</div>
+          <div class="pdf-list" id="pdfList" role="list" aria-label="Uploaded documents">
+            <div class="pdf-empty" id="pdfEmpty">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+              </svg>
+              <span>No documents uploaded yet</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Settings panel (inside sidebar) -->
+        <div class="nav-panel" id="settingsPanel" hidden>
+          <div class="nav-panel-title">Preferences</div>
+          <div class="settings-row"><span class="settings-label">Response Style</span><span class="settings-value">Detailed</span></div>
+          <div class="settings-row"><span class="settings-label">Language</span><span class="settings-value">English</span></div>
+          <div class="settings-row"><span class="settings-label">Auto-scroll</span><span class="settings-value">Enabled</span></div>
+        </div>
+
+        <!-- Uploaded docs section -->
+        <div class="sidebar-section">
+          <div class="section-label">
+            <span>Documents</span>
+            <span class="section-badge" id="pdfCount">0</span>
+          </div>
+          <div class="pdf-list-sidebar" id="pdfListSidebar" role="list">
+            <div class="pdf-empty" id="pdfSidebarEmpty">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+              </svg>
+              <span>No documents yet</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sidebar footer -->
+        <div class="sidebar-footer">
+          <div class="status-row">
+            <span class="status-dot" aria-hidden="true"></span>
+            <span class="status-label">Online — Ready</span>
+          </div>
+        </div>
+
+      </div>
+    </aside>
+
+    <!-- ═══ MAIN ═══ -->
+    <main class="main" id="main">
+
+      <!-- Topbar -->
+      <header class="topbar" aria-label="Top navigation">
+        <div class="topbar-left">
+          <button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle sidebar" type="button">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+            </svg>
+          </button>
+          <div class="topbar-title">
+            <span class="topbar-app">RAGdoc</span>
+            <div class="topbar-separator"></div>
+            <span class="topbar-accent">AI Assistant</span>
+          </div>
+        </div>
+        <div class="topbar-right">
+          <!-- Search button -->
+          <button class="topbar-btn" id="searchBtn" type="button" aria-label="Search conversations">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+            <span>Search</span>
+          </button>
+          <!-- Notifications button -->
+          <button class="topbar-btn" id="notifBtn" type="button" aria-label="Notifications">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+            </svg>
+          </button>
+          <!-- Upload button -->
+          <button class="topbar-btn" id="uploadToggleBtn" type="button" aria-label="Upload document">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
+            </svg>
+            <span>Upload</span>
+          </button>
+          <!-- New Chat button -->
+          <button class="topbar-btn topbar-btn--primary" id="newChatBtn" type="button" aria-label="New chat">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+            </svg>
+            <span>New Chat</span>
+          </button>
+          <!-- Clerk UserButton -->
+          <div id="clerkUserButtonTopbar" class="topbar-user-btn"></div>
+        </div>
+      </header>
+
+      <div class="content-wrap">
+
+        <!-- ═══ UPLOAD MODAL ═══ -->
+        <div class="upload-panel" id="uploadPanel" aria-label="Document upload" hidden>
+          <div class="upload-panel-inner">
+            <div class="upload-panel-head">
+              <div class="upload-panel-title">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                  <polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
+                </svg>
+                Upload Document
+              </div>
+              <button class="close-panel-btn" id="closePanelBtn" type="button" aria-label="Close upload panel">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+              </button>
+            </div>
+            <form id="uploadForm" class="upload-form" novalidate>
+              <label class="dropzone" id="dropZone" for="fileInput" aria-label="Drop PDF here or click to browse">
+                <input type="file" name="pdf" id="fileInput" accept=".pdf" class="sr-only" />
+                <div class="dropzone-blob" aria-hidden="true"></div>
+                <div class="dropzone-icon" aria-hidden="true">
+                  <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <polyline points="14 2 14 8 20 8"/>
+                    <line x1="12" y1="11" x2="12" y2="17"/>
+                    <polyline points="9 14 12 11 15 14"/>
+                  </svg>
+                </div>
+                <div class="dropzone-primary" id="dropPrimary">Drop your document here</div>
+                <div class="dropzone-secondary">or <span class="link-text">browse files</span> — PDF up to 50MB</div>
+                <div class="file-chip" id="fileChip" hidden>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    <polyline points="14 2 14 8 20 8"/>
+                  </svg>
+                  <span id="fileChipName"></span>
+                </div>
+                <div class="progress-wrap" id="progressWrap" hidden>
+                  <div class="progress-track">
+                    <div class="progress-fill" id="progressFill"></div>
+                  </div>
+                  <span class="progress-label" id="progressLabel">Uploading…</span>
+                </div>
+              </label>
+              <div class="upload-actions">
+                <div class="upload-hints">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>
+                  </svg>
+                  <span>Your document is processed securely and privately</span>
+                </div>
+                <button class="upload-btn" type="submit" id="uploadBtn">
+                  <span class="upload-btn-spinner" aria-hidden="true"></span>
+                  <svg class="upload-btn-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                    <polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
+                  </svg>
+                  Upload
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- ═══ CHAT AREA ═══ -->
+        <div class="chat-area" id="chatArea" style="position: relative;">
+          <div class="messages" id="messages" role="log" aria-live="polite" aria-relevant="additions text" aria-label="Chat messages">
+
+            <!-- Welcome State -->
+            <div class="welcome-state" id="welcomeState">
+              <div class="welcome-orb" aria-hidden="true"></div>
+              <h1 class="welcome-title">What can I help you with?</h1>
+              <p class="welcome-sub">Upload a document and ask questions. I'll analyze your content and provide accurate, detailed answers instantly.</p>
+              <div class="quick-chips" role="group" aria-label="Suggested prompts">
+                <button class="quick-chip" type="button" data-prompt="Summarize this document in 5 bullet points.">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+                  Summarize this document
+                </button>
+                <button class="quick-chip" type="button" data-prompt="What are the key findings and conclusions?">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+                  Key findings
+                </button>
+                <button class="quick-chip" type="button" data-prompt="What are the main topics covered in this document?">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                  Main topics
+                </button>
+                <button class="quick-chip" type="button" data-prompt="Extract all action items and next steps from this document.">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                  Action items
+                </button>
+              </div>
+            </div>
+
+            <!-- Typing Indicator -->
+            <div class="typing-row" id="typingRow" hidden aria-hidden="true">
+              <div class="msg-avatar msg-avatar--ai" aria-hidden="true">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M12 2L2 7l10 5 10-5-10-5z" fill="currentColor" opacity="0.9"/>
+                  <path d="M2 17l10 5 10-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none" opacity="0.6"/>
+                  <path d="M2 12l10 5 10-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none" opacity="0.8"/>
+                </svg>
+              </div>
+              <div class="typing-content">
+                <span class="typing-label">RAGdoc AI</span>
+                <div class="typing-bubble">
+                  <span class="typing-dot"></span>
+                  <span class="typing-dot"></span>
+                  <span class="typing-dot"></span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Scroll to bottom -->
+          <button class="scroll-bottom-btn" id="scrollBottomBtn" type="button" aria-label="Scroll to latest message">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"/>
+            </svg>
+          </button>
+
+          <!-- Input Area -->
+          <div class="input-area" aria-label="Message input">
+            <form id="chatForm" class="chat-form" novalidate>
+              <div class="composer">
+                <textarea
+                  id="chatInput"
+                  class="composer-input"
+                  rows="1"
+                  placeholder="Ask a question about your document…"
+                  aria-label="Type your question"
+                ></textarea>
+                <div class="composer-footer">
+                  <span class="composer-hint" aria-hidden="true">
+                    <kbd>Shift</kbd><kbd>Enter</kbd> for new line
+                  </span>
+                  <button class="send-btn" type="submit" id="sendBtn" aria-label="Send message">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <line x1="22" y1="2" x2="11" y2="13"/>
+                      <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </form>
+            <p class="input-disclaimer" aria-hidden="true">Responses are based on your uploaded documents. Results may vary.</p>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- ═══ NOTIFICATION PANEL ═══ -->
+  <div class="notification-panel" id="notificationPanel">
+    <div class="notification-header">
+      <span class="notification-title">Notifications</span>
+      <button class="close-panel-btn" id="closeNotifBtn" type="button" aria-label="Close notifications">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+    <div class="notification-list" id="notificationList">
+      <div class="notification-empty">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+          <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+        </svg>
+        <span>No notifications yet</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SEARCH OVERLAY ═══ -->
+  <div class="search-overlay" id="searchOverlay" hidden>
+    <div class="search-modal">
+      <div class="search-input-wrap">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input type="text" class="search-input" id="searchInput" placeholder="Search conversations…" autocomplete="off" />
+        <span class="search-kbd">Esc</span>
+      </div>
+      <div class="search-results" id="searchResults">
+        <div class="notification-empty" style="padding: 32px;">
+          <span>Type to search your conversations</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ SETTINGS MODAL ═══ -->
+  <div class="settings-modal" id="settingsModal" hidden>
+    <div class="settings-modal-inner">
+      <div class="settings-modal-header">
+        <span class="settings-modal-title">Settings</span>
+        <button class="close-panel-btn" id="closeSettingsBtn" type="button" aria-label="Close settings">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+      <div class="settings-modal-body">
+        <div class="settings-group">
+          <div class="settings-group-title">General</div>
+          <div class="settings-option">
+            <div class="settings-option-label">
+              <span class="settings-option-name">Auto-scroll to latest</span>
+              <span class="settings-option-desc">Automatically scroll to new messages</span>
+            </div>
+            <div class="toggle active" id="toggleAutoScroll" role="switch" aria-checked="true" tabindex="0"></div>
+          </div>
+          <div class="settings-option">
+            <div class="settings-option-label">
+              <span class="settings-option-name">Sound notifications</span>
+              <span class="settings-option-desc">Play a sound when AI responds</span>
+            </div>
+            <div class="toggle" id="toggleSound" role="switch" aria-checked="false" tabindex="0"></div>
+          </div>
+        </div>
+        <div class="settings-group">
+          <div class="settings-group-title">Appearance</div>
+          <div class="settings-option">
+            <div class="settings-option-label">
+              <span class="settings-option-name">Compact messages</span>
+              <span class="settings-option-desc">Use smaller spacing between messages</span>
+            </div>
+            <div class="toggle" id="toggleCompact" role="switch" aria-checked="false" tabindex="0"></div>
+          </div>
+        </div>
+      </div>
+      <div class="settings-modal-footer">
+        <button class="btn-secondary" id="settingsCancelBtn" type="button">Cancel</button>
+        <button class="btn-primary" id="settingsSaveBtn" type="button">Save Changes</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ CONFIRM DIALOG ═══ -->
+  <div class="confirm-dialog" id="confirmDialog" hidden>
+    <div class="confirm-dialog-inner">
+      <div class="confirm-dialog-icon warning" id="confirmIcon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+          <line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+        </svg>
+      </div>
+      <div class="confirm-dialog-title" id="confirmTitle">Clear conversation?</div>
+      <div class="confirm-dialog-text" id="confirmText">This will remove all messages in the current conversation. This action cannot be undone.</div>
+      <div class="confirm-dialog-actions">
+        <button class="btn-secondary" id="confirmCancelBtn" type="button">Cancel</button>
+        <button class="btn-danger" id="confirmOkBtn" type="button">Clear</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast stack -->
+  <div class="toast-stack" id="toastStack" aria-live="polite" aria-atomic="false"></div>
+  <div class="backdrop" id="backdrop" aria-hidden="true"></div>
+
+  <!-- ═══ SCRIPTS ═══ -->
+  <script>
+    const clerkPubKey = "{{ publishable_key }}";
+    const b64 = clerkPubKey.split("_")[2];
+    const pad = b64.length % 4 ? "=".repeat(4 - b64.length % 4) : "";
+    const clerkDomain = atob(b64 + pad).replace(/\$$/, "");
+    const frontendApi = "https://" + clerkDomain;
+
+    const cs = document.createElement("script");
+    cs.setAttribute("data-clerk-publishable-key", clerkPubKey);
+    cs.setAttribute("data-clerk-frontend-api", frontendApi);
+    cs.src = frontendApi + "/npm/@clerk/clerk-js@latest/dist/clerk.browser.js";
+    cs.crossOrigin = "anonymous";
+    cs.onload = function() {
+      const app = document.createElement("script");
+      app.src = "{{ url_for('static', filename='script.js') }}";
+      document.body.appendChild(app);
+    };
+    document.body.appendChild(cs);
+  </script>
+</body>
+</html>

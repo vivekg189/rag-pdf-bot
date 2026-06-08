@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign In — RAGdoc AI</title>
+  <meta name="description" content="Sign in to RAGdoc AI — your intelligent document assistant." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+  <style>
+    body.auth-page {
+      background: #ffffff;
+      display: flex;
+      align-items: stretch;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 0;
+    }
+
+    .auth-layout {
+      display: flex;
+      width: 100%;
+      min-height: 100vh;
+    }
+
+    /* ── Left Panel (Branding) ────────────────── */
+    .auth-hero {
+      flex: 1;
+      background: linear-gradient(145deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 60px 48px;
+      position: relative;
+      overflow: hidden;
+    }
+    .auth-hero::before {
+      content: '';
+      position: absolute;
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(59,130,246,0.15) 0%, transparent 70%);
+      top: -100px; right: -100px;
+      border-radius: 50%;
+      animation: heroGlow 6s ease-in-out infinite;
+    }
+    .auth-hero::after {
+      content: '';
+      position: absolute;
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, rgba(99,102,241,0.10) 0%, transparent 70%);
+      bottom: -80px; left: -80px;
+      border-radius: 50%;
+      animation: heroGlow 8s ease-in-out infinite reverse;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      max-width: 420px;
+    }
+
+    .hero-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 48px;
+    }
+    .hero-logo-icon {
+      width: 44px; height: 44px;
+      background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%);
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      box-shadow: 0 8px 25px rgba(59,130,246,0.3);
+    }
+    .hero-logo-text {
+      font-size: 22px;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: -0.03em;
+    }
+    .hero-logo-badge {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #60a5fa;
+      background: rgba(96,165,250,0.12);
+      border: 1px solid rgba(96,165,250,0.20);
+      border-radius: 20px;
+      padding: 3px 8px;
+    }
+
+    .hero-title {
+      font-size: 36px;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: -0.04em;
+      line-height: 1.15;
+      margin-bottom: 16px;
+    }
+    .hero-title span {
+      background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero-subtitle {
+      font-size: 16px;
+      color: #94a3b8;
+      line-height: 1.7;
+      margin-bottom: 40px;
+    }
+
+    .hero-features {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .hero-feature {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .hero-feature-icon {
+      width: 40px; height: 40px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #60a5fa;
+      flex-shrink: 0;
+    }
+    .hero-feature-text {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+    }
+    .hero-feature-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #e2e8f0;
+    }
+    .hero-feature-desc {
+      font-size: 13px;
+      color: #64748b;
+    }
+
+    /* ── Right Panel (Form) ───────────────────── */
+    .auth-form-panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 48px 32px;
+      background: #ffffff;
+      min-width: 0;
+    }
+
+    .auth-form-inner {
+      width: 100%;
+      max-width: 400px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 32px;
+    }
+
+    .auth-form-header {
+      text-align: center;
+    }
+    .auth-form-title {
+      font-size: 26px;
+      font-weight: 800;
+      color: #0f172a;
+      letter-spacing: -0.03em;
+      margin-bottom: 8px;
+    }
+    .auth-form-subtitle {
+      font-size: 15px;
+      color: #64748b;
+    }
+    .auth-form-subtitle a {
+      color: #2563eb;
+      font-weight: 500;
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+    .auth-form-subtitle a:hover {
+      color: #1d4ed8;
+      text-decoration: underline;
+    }
+
+    #sign-in {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+    }
+
+    /* Hide Clerk branding */
+    .cl-internal-b3fm6y,
+    .cl-footerAction__signIn .cl-internal-b3fm6y,
+    .cl-footer [class*="powered"],
+    .cl-footer [class*="secured"],
+    .cl-internal-17on6rl,
+    .cl-internal-wkkub3,
+    div[class*="cl-powered"],
+    div[class*="cl-secured"],
+    .cl-footerPages,
+    .cl-footer {
+      display: none !important;
+      visibility: hidden !important;
+      height: 0 !important;
+      overflow: hidden !important;
+    }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .auth-layout { flex-direction: column; }
+      .auth-hero { padding: 40px 24px; min-height: auto; }
+      .hero-title { font-size: 28px; }
+      .hero-features { display: none; }
+      .auth-form-panel { padding: 32px 20px; }
+    }
+    @media (max-width: 560px) {
+      .hero-title { font-size: 24px; }
+      .hero-subtitle { font-size: 14px; margin-bottom: 24px; }
+      .auth-form-title { font-size: 22px; }
+    }
+
+    @keyframes heroGlow {
+      0%, 100% { opacity: 0.6; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.1); }
+    }
+  </style>
+</head>
+<body class="auth-page">
+
+  <div class="auth-layout">
+
+    <!-- Left Hero Panel -->
+    <div class="auth-hero">
+      <div class="hero-content">
+        <div class="hero-logo">
+          <div class="hero-logo-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+              <path d="M12 2L2 7l10 5 10-5-10-5z" fill="currentColor" opacity="0.9"/>
+              <path d="M2 17l10 5 10-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none" opacity="0.6"/>
+              <path d="M2 12l10 5 10-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none" opacity="0.8"/>
+            </svg>
+          </div>
+          <span class="hero-logo-text">RAGdoc</span>
+          <span class="hero-logo-badge">AI</span>
+        </div>
+
+        <h1 class="hero-title">Your documents,<br/><span>intelligently understood.</span></h1>
+        <p class="hero-subtitle">Upload any PDF and get instant, accurate answers powered by advanced AI. Transform how you interact with documents.</p>
+
+        <div class="hero-features">
+          <div class="hero-feature">
+            <div class="hero-feature-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+              </svg>
+            </div>
+            <div class="hero-feature-text">
+              <span class="hero-feature-title">Instant Answers</span>
+              <span class="hero-feature-desc">Get accurate responses in seconds</span>
+            </div>
+          </div>
+          <div class="hero-feature">
+            <div class="hero-feature-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                <polyline points="14 2 14 8 20 8"/>
+              </svg>
+            </div>
+            <div class="hero-feature-text">
+              <span class="hero-feature-title">Any PDF Document</span>
+              <span class="hero-feature-desc">Reports, contracts, papers — all supported</span>
+            </div>
+          </div>
+          <div class="hero-feature">
+            <div class="hero-feature-icon">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+              </svg>
+            </div>
+            <div class="hero-feature-text">
+              <span class="hero-feature-title">Private & Secure</span>
+              <span class="hero-feature-desc">Your data stays yours, always</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Form Panel -->
+    <div class="auth-form-panel">
+      <div class="auth-form-inner">
+        <div class="auth-form-header">
+          <h2 class="auth-form-title">Welcome back</h2>
+          <p class="auth-form-subtitle">Don't have an account? <a href="/signup">Sign up free</a></p>
+        </div>
+        <div id="sign-in"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    const clerkPubKey = "{{ publishable_key }}";
+    const base64Part = clerkPubKey.split("_")[2];
+    const padding    = base64Part.length % 4 ? "=".repeat(4 - base64Part.length % 4) : "";
+    const domain     = atob(base64Part + padding).replace(/\$$/, "");
+    const frontendApi = `https://${domain}`;
+
+    const script = document.createElement("script");
+    script.setAttribute("data-clerk-publishable-key", clerkPubKey);
+    script.setAttribute("data-clerk-frontend-api", frontendApi);
+    script.src = `${frontendApi}/npm/@clerk/clerk-js@latest/dist/clerk.browser.js`;
+    script.crossOrigin = "anonymous";
+    script.onload = async () => {
+      await window.Clerk.load();
+      if (window.Clerk.user) {
+        window.location.href = "/";
+        return;
+      }
+      window.Clerk.mountSignIn(document.getElementById("sign-in"), {
+        afterSignInUrl: "/",
+        signUpUrl: "/signup",
+      });
+    };
+    document.body.appendChild(script);
+  </script>
+</body>
+</html>

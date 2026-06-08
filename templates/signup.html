@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign Up — RAGdoc AI</title>
+  <meta name="description" content="Create your RAGdoc AI account — start analyzing documents with AI today." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+  <style>
+    body.auth-page {
+      background: #ffffff;
+      display: flex;
+      align-items: stretch;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 0;
+    }
+
+    .auth-layout {
+      display: flex;
+      width: 100%;
+      min-height: 100vh;
+    }
+
+    /* ── Left Panel (Branding) ────────────────── */
+    .auth-hero {
+      flex: 1;
+      background: linear-gradient(145deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 60px 48px;
+      position: relative;
+      overflow: hidden;
+    }
+    .auth-hero::before {
+      content: '';
+      position: absolute;
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(99,102,241,0.15) 0%, transparent 70%);
+      top: -100px; left: -100px;
+      border-radius: 50%;
+      animation: heroGlow 7s ease-in-out infinite;
+    }
+    .auth-hero::after {
+      content: '';
+      position: absolute;
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, rgba(59,130,246,0.12) 0%, transparent 70%);
+      bottom: -80px; right: -80px;
+      border-radius: 50%;
+      animation: heroGlow 9s ease-in-out infinite reverse;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 1;
+      max-width: 420px;
+    }
+
+    .hero-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 48px;
+    }
+    .hero-logo-icon {
+      width: 44px; height: 44px;
+      background: linear-gradient(135deg, #3b82f6 0%, #60a5fa 100%);
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      box-shadow: 0 8px 25px rgba(59,130,246,0.3);
+    }
+    .hero-logo-text {
+      font-size: 22px;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: -0.03em;
+    }
+    .hero-logo-badge {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #60a5fa;
+      background: rgba(96,165,250,0.12);
+      border: 1px solid rgba(96,165,250,0.20);
+      border-radius: 20px;
+      padding: 3px 8px;
+    }
+
+    .hero-title {
+      font-size: 36px;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: -0.04em;
+      line-height: 1.15;
+      margin-bottom: 16px;
+    }
+    .hero-title span {
+      background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero-subtitle {
+      font-size: 16px;
+      color: #94a3b8;
+      line-height: 1.7;
+      margin-bottom: 40px;
+    }
+
+    /* Stats row */
+    .hero-stats {
+      display: flex;
+      gap: 32px;
+      padding-top: 32px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+    .hero-stat {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .hero-stat-value {
+      font-size: 28px;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: -0.03em;
+    }
+    .hero-stat-label {
+      font-size: 13px;
+      color: #64748b;
+    }
+
+    /* Testimonial */
+    .hero-testimonial {
+      margin-top: 40px;
+      padding: 20px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 16px;
+    }
+    .hero-testimonial-text {
+      font-size: 14px;
+      color: #94a3b8;
+      line-height: 1.7;
+      font-style: italic;
+      margin-bottom: 12px;
+    }
+    .hero-testimonial-author {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .hero-testimonial-avatar {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .hero-testimonial-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: #e2e8f0;
+    }
+    .hero-testimonial-role {
+      font-size: 12px;
+      color: #64748b;
+    }
+
+    /* ── Right Panel (Form) ───────────────────── */
+    .auth-form-panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 48px 32px;
+      background: #ffffff;
+      min-width: 0;
+    }
+
+    .auth-form-inner {
+      width: 100%;
+      max-width: 400px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 32px;
+    }
+
+    .auth-form-header {
+      text-align: center;
+    }
+    .auth-form-title {
+      font-size: 26px;
+      font-weight: 800;
+      color: #0f172a;
+      letter-spacing: -0.03em;
+      margin-bottom: 8px;
+    }
+    .auth-form-subtitle {
+      font-size: 15px;
+      color: #64748b;
+    }
+    .auth-form-subtitle a {
+      color: #2563eb;
+      font-weight: 500;
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+    .auth-form-subtitle a:hover {
+      color: #1d4ed8;
+      text-decoration: underline;
+    }
+
+    #sign-up {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+    }
+
+    /* Hide Clerk branding */
+    .cl-internal-b3fm6y,
+    .cl-footerAction__signUp .cl-internal-b3fm6y,
+    .cl-footer [class*="powered"],
+    .cl-footer [class*="secured"],
+    .cl-internal-17on6rl,
+    .cl-internal-wkkub3,
+    div[class*="cl-powered"],
+    div[class*="cl-secured"],
+    .cl-footerPages,
+    .cl-footer {
+      display: none !important;
+      visibility: hidden !important;
+      height: 0 !important;
+      overflow: hidden !important;
+    }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .auth-layout { flex-direction: column; }
+      .auth-hero { padding: 40px 24px; min-height: auto; }
+      .hero-title { font-size: 28px; }
+      .hero-stats { display: none; }
+      .hero-testimonial { display: none; }
+      .auth-form-panel { padding: 32px 20px; }
+    }
+    @media (max-width: 560px) {
+      .hero-title { font-size: 24px; }
+      .hero-subtitle { font-size: 14px; margin-bottom: 24px; }
+      .auth-form-title { font-size: 22px; }
+    }
+
+    @keyframes heroGlow {
+      0%, 100% { opacity: 0.6; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.1); }
+    }
+  </style>
+</head>
+<body class="auth-page">
+
+  <div class="auth-layout">
+
+    <!-- Left Hero Panel -->
+    <div class="auth-hero">
+      <div class="hero-content">
+        <div class="hero-logo">
+          <div class="hero-logo-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+              <path d="M12 2L2 7l10 5 10-5-10-5z" fill="currentColor" opacity="0.9"/>
+              <path d="M2 17l10 5 10-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none" opacity="0.6"/>
+              <path d="M2 12l10 5 10-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none" opacity="0.8"/>
+            </svg>
+          </div>
+          <span class="hero-logo-text">RAGdoc</span>
+          <span class="hero-logo-badge">AI</span>
+        </div>
+
+        <h1 class="hero-title">Start analyzing<br/><span>documents in seconds.</span></h1>
+        <p class="hero-subtitle">Join thousands of professionals who use RAGdoc AI to extract insights from documents faster than ever before.</p>
+
+        <div class="hero-stats">
+          <div class="hero-stat">
+            <span class="hero-stat-value">10k+</span>
+            <span class="hero-stat-label">Documents analyzed</span>
+          </div>
+          <div class="hero-stat">
+            <span class="hero-stat-value">5k+</span>
+            <span class="hero-stat-label">Active users</span>
+          </div>
+          <div class="hero-stat">
+            <span class="hero-stat-value">99.9%</span>
+            <span class="hero-stat-label">Uptime</span>
+          </div>
+        </div>
+
+        <div class="hero-testimonial">
+          <p class="hero-testimonial-text">"RAGdoc AI completely changed how our team handles document review. What used to take hours now takes minutes."</p>
+          <div class="hero-testimonial-author">
+            <div class="hero-testimonial-avatar">S</div>
+            <div>
+              <div class="hero-testimonial-name">Sarah Chen</div>
+              <div class="hero-testimonial-role">Product Manager</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Form Panel -->
+    <div class="auth-form-panel">
+      <div class="auth-form-inner">
+        <div class="auth-form-header">
+          <h2 class="auth-form-title">Create your account</h2>
+          <p class="auth-form-subtitle">Already have an account? <a href="/login">Sign in</a></p>
+        </div>
+        <div id="sign-up"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    const clerkPubKey = "{{ publishable_key }}";
+    const base64Part = clerkPubKey.split("_")[2];
+    const padding    = base64Part.length % 4 ? "=".repeat(4 - base64Part.length % 4) : "";
+    const domain     = atob(base64Part + padding).replace(/\$$/, "");
+    const frontendApi = `https://${domain}`;
+
+    const script = document.createElement("script");
+    script.setAttribute("data-clerk-publishable-key", clerkPubKey);
+    script.setAttribute("data-clerk-frontend-api", frontendApi);
+    script.src = `${frontendApi}/npm/@clerk/clerk-js@latest/dist/clerk.browser.js`;
+    script.crossOrigin = "anonymous";
+    script.onload = async () => {
+      await window.Clerk.load();
+      if (window.Clerk.user) {
+        window.location.href = "/";
+        return;
+      }
+      window.Clerk.mountSignUp(document.getElementById("sign-up"), {
+        afterSignUpUrl: "/",
+        signInUrl: "/login",
+      });
+    };
+    document.body.appendChild(script);
+  </script>
+</body>
+</html>
